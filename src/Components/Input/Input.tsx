@@ -37,15 +37,6 @@ function Input(props: Props) {
     setInputValue('');
     // this.inputRef.current.focus();
   }
-
-  // onFocus = () => {
-  //   this.setState({isFocused: true});
-  // }
-
-  // onBlur = () => {
-  //   this.setState({isFocused: false});
-  // }
-
   
   return (
     <>

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, {useState} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import './App.css';
 import Input from './Components/Input/Input';
 import Task from './Components/Task/Task';
@@ -11,8 +11,37 @@ export type TaskType = {
   completedAt: number | null,
 }
 
+function usePrevious(value: any) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
+function getTasks() {
+  return JSON.parse(localStorage.getItem('tasks') || '') || [];
+}
+
+function updateStorage(tasklist : TaskType[] = []) {
+  localStorage.setItem('tasks', JSON.stringify(tasklist.filter((task: TaskType) => !task.completedAt)));
+}
+
 function App() {
   const [tasks, setTasks] = useState<TaskType[]>([]);
+  const [init, setInit] = useState<boolean>(false);
+  const prevTasks = usePrevious(tasks);
+
+  useEffect(()=>{
+    if (!init) {
+      setTasks(getTasks());
+      setInit(true)
+    } else {
+      if (JSON.stringify(prevTasks) !== JSON.stringify(tasks)) {
+        updateStorage(tasks)
+      } 
+    }
+  })
 
   const onToggle = (id: number) => {
     
@@ -21,6 +50,7 @@ function App() {
       newTask.completedAt = !newTask.completedAt ? moment.now() : null;
       const newTasks = [...tasks];
       newTasks[index] = newTask;
+      console.log('newTasks', newTasks)
       setTasks(newTasks); 
     
   };
